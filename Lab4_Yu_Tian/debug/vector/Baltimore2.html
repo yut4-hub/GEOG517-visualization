@@ -1,0 +1,332 @@
+<!DOCTYPE html lang="en-UK">
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Leaflet Heatmap demo</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
+
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.4/leaflet.css" />
+		<!--[if lte IE 8]>
+		    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.4/leaflet.ie.css" />
+		<![endif]-->
+		<style type="text/css" media="screen">
+			body{
+				margin: 0;
+				padding: 0;
+			}
+
+			#map {
+				width: 100%;
+				height: 100%;
+			}
+		#button_area {
+			width: 800px;
+			height:150px;
+			position:absolute;
+			bottom: -20px;
+			left: 20px;
+		} 				
+		</style>
+	<link rel="stylesheet" href="../../dist/leaflet.css" />
+	<!--[if lte IE 8]><link rel="stylesheet" href="../../dist/leaflet.ie.css" /><![endif]-->
+	<link rel="stylesheet" href="../../dist/leaflet.css" />
+	<!--[if lte IE 8]><link rel="stylesheet" href="../../dist/leaflet.ie.css" /><![endif]-->
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="http://jqueryui.com/slider/resources/demos/style.css" />
+	
+	
+	<link rel="stylesheet" href="../css/screen.css" />
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>
+
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>		
+		<script src="http://cdn.leafletjs.com/leaflet-0.4.4/leaflet-src.js"></script>
+		<script type="text/javascript" src="../../src/heatmap.js"></script>
+		<script type="text/javascript" src="../../src/heatmap-leaflet.js"></script>
+		<script type="text/javascript" src="data.js"></script>
+		<script type="text/javascript" src="path_noCam.js"></script>
+		<script type="text/javascript" src="path_6_9m.js"></script>
+		<script type="text/javascript" src="path_10_16m.js"></script>
+		<script type="text/javascript" src="path_17_23m.js"></script>
+		
+		<script type="text/javascript" src="Routes_No_Cameras.js"></script>
+		<script type="text/javascript" src="Routes_6_9m.js"></script>
+		<script type="text/javascript" src="Routes_10_16m.js"></script>
+		<script type="text/javascript" src="Routes_17_23m.js"></script>	
+
+	</head>
+	<body>
+		<div id="map"></div>
+	<div id="button_area">
+        
+        <p>
+          <label for="amount">Radius:</label>
+          <input type="text" id="amount" style="border: 0; color: #f6931f; font-weight: bold;" />
+        </p>
+         
+         <div id="slider"></div>
+         </br>
+	<button id="refine_button" type="button"   onClick="removeheat()" >Turn off Heat map</button>
+		
+	</div>			
+	</body>
+
+    <script>
+    $(function() {
+      $( "#slider" ).slider({
+        value:0,
+        min: 5,
+        max: 50,
+        step: 5,
+        slide: function( event, ui ) {
+     
+          $( "#amount" ).val( "" + ui.value );
+  	 
+  	 Heatmap(ui.value );
+  	 
+        }
+      });
+      $( "#amount" ).val( "" + $( "#slider" ).slider( "value" ) );
+    });
+  </script>	
+	
+	<script type="text/javascript" charset="utf-8">
+	var map;
+	var heatmap;
+	var testData={
+    	max: 46,
+    	data: data    	};
+	 map = L.map('map').setView([39.30 , -76.609], 13);
+
+	var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
+		//attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+		key: 'BC9A493B41014CAABB98F0471D759707',
+		styleId: 998
+	}).addTo(map);
+
+	<!--The location of Cameras-->
+	
+	//marker.bindPopup("Hello World").openPopup();
+
+	//var marker2 = new L.Marker(new L.LatLng(39.30, -76.609));
+	//map.addLayer(marker2);
+	/*
+	var camera1 = new L.CircleMarker(new L.LatLng(39.29099600000, -76.62107400000), {color: 'black', radius:5});
+	map.addLayer(camera1);
+	var camera2 = new L.CircleMarker(new L.LatLng(39.29048796520, -76.62366514370), {color: 'black', radius:5});
+	map.addLayer(camera2);
+	var camera3 = new L.CircleMarker(new L.LatLng(39.28932400000, -76.62098500000), {color: 'black', radius:5});
+	map.addLayer(camera3);		
+	*/
+	
+	var camera = [];
+	for (var i = 0; i < data.length; i++) {
+		camera[i] = new L.CircleMarker(new L.LatLng(data[i].lat, data[i].lon), {color: 'black', radius:5});
+		map.addLayer(camera[i]);
+	}
+	
+	
+	//var buffer1m = new L.CircleMarker(new L.LatLng(39.30, -76.609), {color: 'red', radius:100});
+	//map.addLayer(buffer1m);
+	
+	
+	
+    //<!--Path with no Camera-->
+    for (var i = 0, latlngs = [], len = path_noCam.length; i < len; i++) {
+    	latlngs.push(new L.LatLng(path_noCam[i][0], path_noCam[i][1]));
+    }
+    var path_noCam = new L.Polyline(latlngs, {
+        color: 'red',
+        weight: 15,
+        smoothFactor: 0
+    });
+	//path_no.addTo(map);	
+    map.addLayer(path_noCam);
+    //path_no.bindPopup("Hello world");
+	
+	// new code
+/*	var path_noCam = [];
+	for (var i = 0; i < routes_noCam.features.length; i++) {
+		var feature = routes_noCam.features[i];
+		for (var j = 0, latlngs = []; j < feature.geometry.coordinates.length; j++) {
+			latlngs.push(new L.LatLng(feature.geometry.coordinates[j][1], feature.geometry.coordinates[j][0]));
+		}
+		path_noCam[i] = new L.Polyline(latlngs, {
+			color: 'red',
+			weight: 15,
+			smoothFactor: 0
+		});
+		map.addLayer(path_noCam[i]);
+	}
+*/	
+
+	latlngs = [];
+	for (var i = 0; i < routes_noCam.features.length; i++) {
+		var feature = routes_noCam.features[i];
+		latlngs[i] = [];
+		for (var j = 0; j < feature.geometry.coordinates.length; j++) {
+			latlngs[i].push(new L.LatLng(feature.geometry.coordinates[j][1], feature.geometry.coordinates[j][0]));
+		}
+	}
+	path_noCam = new L.MultiPolyline(latlngs, {
+			color: 'red',
+			weight: 15,
+			smoothFactor: 0
+	});
+	map.addLayer(path_noCam);
+	
+	
+
+    //Path with 6 ~ 9 mile Routes Surveillance
+    for (var i = 0, latlngs = [], len = path_6_9m.length; i < len; i++) {
+    	latlngs.push(new L.LatLng(path_6_9m[i][0], path_6_9m[i][1]));
+    }
+    var path_6_9m = new L.Polyline(latlngs, {
+        color: 'orange',
+        weight: 5,
+        smoothFactor: 0
+    });
+    map.addLayer(path_6_9m)	
+	
+	// new code
+	var path_6_9m = [];
+	for (var i = 0; i < routes_6_9m.features.length; i++) {
+		var feature = routes_6_9m.features[i];
+		for (var j = 0, latlngs = []; j < feature.geometry.coordinates.length; j++) {
+			latlngs.push(new L.LatLng(feature.geometry.coordinates[j][1], feature.geometry.coordinates[j][0]));
+		}
+		path_6_9m[i] = new L.Polyline(latlngs, {
+			color: 'orange',
+			weight: 5,
+			smoothFactor: 0
+		});
+		map.addLayer(path_6_9m[i]);
+	}
+	
+	
+
+    //Path with 10 ~ 16 mile Routes Surveillance
+    for (var i = 0, latlngs = [], len = path_10_16m.length; i < len; i++) {
+    	latlngs.push(new L.LatLng(path_10_16m[i][0], path_10_16m[i][1]));
+    }
+    var path_10_16m = new L.Polyline(latlngs, {
+        color: 'green',
+        weight: 10,
+        smoothFactor: 0
+    });
+    map.addLayer(path_10_16m)	
+
+	// new code
+	var path_10_16m = [];
+	for (var i = 0; i < routes_10_16m.features.length; i++) {
+		var feature = routes_10_16m.features[i];
+		for (var j = 0, latlngs = []; j < feature.geometry.coordinates.length; j++) {
+			latlngs.push(new L.LatLng(feature.geometry.coordinates[j][1], feature.geometry.coordinates[j][0]));
+		}
+		path_10_16m[i] = new L.Polyline(latlngs, {
+			color: 'green',
+			weight: 10,
+			smoothFactor: 0
+		});
+		map.addLayer(path_10_16m[i]);
+	}
+	
+	
+	
+    //Path with 17 ~ 23 mile Routes Surveillance
+    for (var i = 0, latlngs = [], len = path_17_23m.length; i < len; i++) {
+    	latlngs.push(new L.LatLng(path_17_23m[i][0], path_17_23m[i][1]));
+    }
+    var path_17_23m = new L.Polyline(latlngs, {
+        color: 'blue',
+        weight: 15,
+        smoothFactor: 0
+    });
+    map.addLayer(path_17_23m)
+
+	// new code
+	var path_17_23m = [];
+	for (var i = 0; i < routes_17_23m.features.length; i++) {
+		var feature = routes_17_23m.features[i];
+		for (var j = 0, latlngs = []; j < feature.geometry.coordinates.length; j++) {
+			latlngs.push(new L.LatLng(feature.geometry.coordinates[j][1], feature.geometry.coordinates[j][0]));
+		}
+		path_17_23m[i] = new L.Polyline(latlngs, {
+			color: 'blue',
+			weight: 15,
+			smoothFactor: 0
+		});
+		map.addLayer(path_17_23m[i]);
+	}
+	
+
+	
+	//heatmap			
+    var heatmapLayer = L.TileLayer.heatMap({
+    	radius: 0,
+    	opacity: 0.8,
+    	gradient: {
+    		0.1: "rgb(0,0,255)",
+    		0.4: "rgb(0,0,255)",
+    		0.7: "rgb(0,255,255)",
+    		0.8: "rgb(0,255,0)",
+    		0.99: "yellow",
+    		1.0: "rgb(255,0,0)"
+    	}
+    });
+    
+	heatmapLayer.addData(testData.data);
+
+	var overlayMaps = {
+		'(RED) Routes without Cameras'   : path_noCam,
+		'(ORANGE) Routes Surveillance 6~9m'  :path_6_9m,
+		'(GREEN) Routes Surveillance 10~16m'  :path_10_16m,
+		'(BLUE) Routes Surveillance 17_23m' :path_17_23m
+	};
+
+	var controls = L.control.layers(null, overlayMaps, {collapsed: false});
+
+	controls.addTo(map);
+
+	layer = heatmapLayer;		
+
+
+    function removeheat(){
+    map.removeLayer(layer);
+    }
+
+    function Heatmap( radius){
+    map.removeLayer(layer);
+    removeheat()
+    	var heatmap = L.TileLayer.heatMap({
+    		radius: radius,
+    		opacity: 0.8,
+    		gradient: {
+    			0.1: "rgb(0,0,255)",
+    			0.4: "rgb(0,0,255)",
+    			0.7: "rgb(0,255,255)",
+    			0.8: "rgb(0,255,0)",
+    			0.99: "yellow",
+    			1.0: "rgb(255,0,0)"
+    		}
+    	});
+    
+    	heatmap.addData(testData.data);
+    
+    	var overlayMaps = {
+    		'Heatmap': heatmap
+    	};
+    
+        heatmap.addTo(map);
+    
+    	layer = heatmap;		
+    }		
+	</script>
+</html>

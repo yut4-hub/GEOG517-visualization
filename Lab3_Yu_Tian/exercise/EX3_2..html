@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet Layers Control Example</title>
+	<meta charset="utf-8" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+
+	
+</head>
+<body>
+	<div id="map" style="width: 1200px; height: 1000px"></div>
+
+	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+	<script type="text/javascript" src="camera.js"></script>
+	<script type="text/javascript" src="Routes_6_9m.js"></script>
+	<script type="text/javascript" src="Routes_10_16m.js"></script>
+	
+	<script>
+
+		var dots = new L.LayerGroup(); 
+	
+		var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+			mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+		var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+			streets  = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+
+		var map = L.map('map', {
+			center: [39.30 , -76.609],
+			zoom: 13,
+			layers: [grayscale]
+		});
+
+		var camera = [];
+		for (var i = 0; i < data.length; i++) {
+			point = data[i];
+			L.circle([point[0], point[1]], 40, {color: 'blue',fillColor: 'blue',weight:1,fillOpacity: 0.3}).addTo(dots);
+
+		}					
+		map.addLayer(dots);	
+
+    // Roads where surveillance cameras are located within 6 to 9  miles from the road
+	latlngs = [];
+	for (var i = 0; i < routes_6_9m.features.length; i++) {
+		var feature = routes_6_9m.features[i];
+		latlngs[i] = [];
+		for (var j = 0; j < feature.geometry.coordinates.length; j++) {
+			latlngs[i].push(new L.LatLng(feature.geometry.coordinates[j][1], feature.geometry.coordinates[j][0]));
+		}
+	}
+	var path_6_9m = new L.MultiPolyline(latlngs, {
+		color: 'orange',
+		weight: 5,
+		smoothFactor: 0
+	});
+	//map.addLayer(path_6_9m);
+	
+	
+
+    //Path with 10 ~ 16 mile Routes Surveillance
+	latlngs = [];
+	for (var i = 0; i < routes_10_16m.features.length; i++) {
+		var feature = routes_10_16m.features[i];
+		latlngs[i] = [];
+		for (var j = 0; j < feature.geometry.coordinates.length; j++) {
+			latlngs[i].push(new L.LatLng(feature.geometry.coordinates[j][1], feature.geometry.coordinates[j][0]));
+		}
+	}
+	var path_10_16m = new L.MultiPolyline(latlngs, {
+		color: 'green',
+		weight: 10,
+		smoothFactor: 0
+	});
+	//map.addLayer(path_10_16m);
+	
+	
+	
+	//Path with 17 ~ 23 mile Routes Surveillance
+	
+	
+		
+	// Add Legend
+	var baseLayers = {
+		"Grayscale": grayscale,
+		"Streets": streets
+	};
+
+	var overlays = {
+		"cameras": dots,
+		'(ORANGE) Routes Surveillance 6~9m'  :path_6_9m,
+		'(GREEN) Routes Surveillance 10~16m'  :path_10_16m		
+	};
+
+	L.control.layers(baseLayers, overlays).addTo(map);
+	</script>
+</body>
+</html>

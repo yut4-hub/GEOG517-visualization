@@ -1,0 +1,16 @@
+﻿Name,full_name,variable,short_name
+DP05_0037PE,Percent Estimate!!RACE!!Total population!!One race!!White,% White,% White
+DP05_0038PE,Percent Estimate!!RACE!!Total population!!One race!!Black or African American,% Black,% Black
+DP05_0044PE,Percent Estimate!!RACE!!Total population!!One race!!Asian,% Asian,% Asian
+DP05_0071PE,Percent Estimate!!HISPANIC OR LATINO AND RACE!!Total population!!Hispanic or Latino (of any race),% Hispanic,% Hispanic
+DP04_0046PE,Percent Estimate!!HOUSING TENURE!!Occupied housing units!!Owner-occupied,% Owner occupied housing,% Owner occupied housing
+DP02_0092PE,Percent Estimate!!PLACE OF BIRTH!!Total population!!Foreign born,% Foreign born,% Foreign born
+DP02_0064PE,Percent Estimate!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Bachelor's degree,% Bachelor's degree,% Bachelor's degree
+DP02_0065PE,Percent Estimate!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Graduate or professional degree,% Graduate or professional degree,% Graduate or professional degree
+DP02_0066PE,Percent Estimate!!EDUCATIONAL ATTAINMENT!!Population 25 years and over!!High school graduate or higher,% High school graduate or higher,% High school graduate or higher
+DP03_0028PE,Percent Estimate!!OCCUPATION!!Civilian employed population 16 years and over!!Service occupations,% Service occupations,% Service occupations
+DP03_0035PE,Percent Estimate!!INDUSTRY!!Civilian employed population 16 years and over!!Manufacturing,% Manufacturing,% Manufacturing
+DP03_0027PE,"Percent Estimate!!OCCUPATION!!Civilian employed population 16 years and over!!Management, business, science, and arts occupations","% Management, business, science, and arts occupations","% Management, business, science, and arts occupations"
+DP03_0030PE,"Percent Estimate!!OCCUPATION!!Civilian employed population 16 years and over!!Natural resources, construction, and maintenance occupations","% Natural resources, construction, and maintenance occupations","% Natural resources, construction, and maintenance occupations"
+DP03_0031PE,"Percent Estimate!!OCCUPATION!!Civilian employed population 16 years and over!!Production, transportation, and material moving occupations","% Production, transportation, and material moving occupations","% Production, transportation, and material moving occupations"
+DP03_0119PE,Percent Estimate!!PERCENTAGE OF FAMILIES AND PEOPLE WHOSE INCOME IN THE PAST 12 MONTHS IS BELOW THE POVERTY LEVEL!!All families,% Poverty,% Poverty

@@ -1,0 +1,258 @@
+<!DOCTYPE html lang="en-UK">
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Leaflet Heatmap demo</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
+
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.4/leaflet.css" />
+		<!--[if lte IE 8]>
+		    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4.4/leaflet.ie.css" />
+		<![endif]-->
+		<style type="text/css" media="screen">
+			body{
+				margin: 0;
+				padding: 0;
+			}
+
+			#map {
+				width: 100%;
+				height: 100%;
+			}
+		#button_area {
+			width: 800px;
+			height:150px;
+			position:absolute;
+			bottom: -20px;
+			left: 20px;
+		} 				
+		</style>
+	<link rel="stylesheet" href="../../dist/leaflet.css" />
+	<!--[if lte IE 8]><link rel="stylesheet" href="../../dist/leaflet.ie.css" /><![endif]-->
+	<link rel="stylesheet" href="../../dist/leaflet.css" />
+	<!--[if lte IE 8]><link rel="stylesheet" href="../../dist/leaflet.ie.css" /><![endif]-->
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="http://jqueryui.com/slider/resources/demos/style.css" />
+	
+	
+	<link rel="stylesheet" href="../css/screen.css" />
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>
+
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>		
+		<script src="http://cdn.leafletjs.com/leaflet-0.4.4/leaflet-src.js"></script>
+		<script type="text/javascript" src="../../src/heatmap.js"></script>
+		<script type="text/javascript" src="../../src/heatmap-leaflet.js"></script>
+<script type="text/javascript" src="data.js"></script>
+
+	</head>
+	<body>
+		<div id="map"></div>
+	<div id="button_area">
+
+<p>
+  <label for="amount">Radius:</label>
+  <input type="text" id="amount" style="border: 0; color: #f6931f; font-weight: bold;" />
+</p>
+ 
+<div id="slider"></div>
+
+	<button id="refine_button" type="button"   onClick="removeheat()" >Turn off Heat map</button>
+		
+	</div>			
+	</body>
+
+  <script>
+  $(function() {
+    $( "#slider" ).slider({
+      value:0,
+      min: 5,
+      max: 50,
+      step: 5,
+      slide: function( event, ui ) {
+	  
+        $( "#amount" ).val( "" + ui.value );
+		
+		Heatmap(ui.value );
+		
+      }
+    });
+    $( "#amount" ).val( "" + $( "#slider" ).slider( "value" ) );
+  });
+  </script>	
+	
+	<script type="text/javascript" charset="utf-8">
+	var map;
+	var heatmap;
+		var testData={
+    		max: 46,
+    		data: data    	};
+		 map = L.map('map').setView([39.30 , -76.609], 13);
+
+		var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
+			//attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+			key: 'BC9A493B41014CAABB98F0471D759707',
+			styleId: 998
+		}).addTo(map);
+
+
+		//marker.bindPopup("Hello World").openPopup();
+
+		//var marker2 = new L.Marker(new L.LatLng(39.30, -76.609));
+		//map.addLayer(marker2);
+		
+		var camera1 = new L.CircleMarker(new L.LatLng(39.30, -76.609), {color: 'black', radius:5});
+		map.addLayer(camera1);			
+		
+		//var buffer1m = new L.CircleMarker(new L.LatLng(39.30, -76.609), {color: 'red', radius:100});
+		//map.addLayer(buffer1m);
+//line map
+var path_points = [
+	[  39.215046 ,-76.587514], 
+	[  39.214766 ,-76.587475], 
+	[  39.214625 ,-76.587460], 
+	[  39.214422 ,-76.587449], 
+	[  39.214252 ,-76.587445], 
+	[  39.214136 ,-76.587437], 
+	[  39.213878 ,-76.587414], 
+	[  39.213521 ,-76.587375], 
+	[  39.213345 ,-76.587351], 
+	[  39.213210 ,-76.587329], 
+	[  39.213084 ,-76.587299], 
+	[  39.212894 ,-76.587248], 
+	[  39.212708 ,-76.587196], 
+	[  39.212514 ,-76.587114], 
+	[  39.212359 ,-76.587029], 
+	[  39.212292 ,-76.586992], 
+	[  39.212180 ,-76.586916], 
+	[  39.212095 ,-76.586859], 
+	[  39.211923 ,-76.586739], 
+	[  39.211538 ,-76.586457], 
+	[  39.211478 ,-76.586405], 
+	[  39.211379 ,-76.586322], 
+	[  39.211007 ,-76.586001], 
+	[  39.210939 ,-76.585942], 
+	[  39.210755 ,-76.585802], 
+	[  39.210628 ,-76.585716], 
+	[  39.210344 ,-76.585572], 
+	[  39.210104 ,-76.585452], 
+	[  39.209935 ,-76.585374], 
+	[  39.209779 ,-76.585311], 
+	[  39.209655 ,-76.585252], 
+	[  39.209557 ,-76.585199], 
+	[  39.209411 ,-76.585115], 
+	[  39.209312 ,-76.585046], 
+	[  39.209137 ,-76.584873], 
+	[  39.209028 ,-76.584746], 
+	[  39.208952 ,-76.584641], 
+	[  39.208835 ,-76.584487], 
+	[  39.208667 ,-76.584233], 
+	[  39.208594 ,-76.584106], 
+	[  39.208527 ,-76.583979], 
+	[  39.208442 ,-76.583772], 
+	[  39.208391 ,-76.583608], 
+	[  39.208343 ,-76.583412], 
+	[  39.208331 ,-76.583353], 
+	[  39.208314 ,-76.583269], 
+	[  39.208293 ,-76.583111], 
+	[  39.208160 ,-76.582057], 
+	[  39.208029 ,-76.581001], 
+	[  39.207958 ,-76.580408], 
+	[  39.207905 ,-76.579949], 
+	[  39.207857 ,-76.579449], 
+	[  39.207817 ,-76.579054], 
+	[  39.207800 ,-76.578911], 
+	[  39.207745 ,-76.578506], 
+	[  39.207715 ,-76.578252], 
+	[  39.207693 ,-76.578130], 
+	[  39.207643 ,-76.577887], 
+	[  39.207567 ,-76.577623], 
+	[  39.207465 ,-76.577386], 
+	[  39.207327 ,-76.577125], 
+	[  39.207235 ,-76.576982], 
+	[  39.207130 ,-76.576838], 
+	[  39.207033 ,-76.576709], 
+	[  39.206909 ,-76.576515], 
+	[  39.206799 ,-76.576336], 
+	[  39.206637 ,-76.576040], 
+	[  39.206540 ,-76.575847], 
+	[  39.206343 ,-76.575418]
+	];
+				
+for (var i = 0, latlngs = [], len = path_points.length; i < len; i++) {
+	latlngs.push(new L.LatLng(path_points[i][0], path_points[i][1]));
+}
+var path = new L.Polyline(latlngs);
+
+map.addLayer(path);
+
+
+path.bindPopup("Hello world");
+		
+	var heatmapLayer = L.TileLayer.heatMap({
+		radius: 0,
+		opacity: 0.8,
+		gradient: {
+			0.1: "rgb(0,0,255)",
+			0.4: "rgb(0,0,255)",
+			0.7: "rgb(0,255,255)",
+			0.8: "rgb(0,255,0)",
+			0.99: "yellow",
+			1.0: "rgb(255,0,0)"
+		}
+	});
+
+	heatmapLayer.addData(testData.data);
+
+	var overlayMaps = {
+		'line'   : path
+	};
+
+	var controls = L.control.layers(null, overlayMaps, {collapsed: false});
+
+	controls.addTo(map);
+
+	layer = heatmapLayer;		
+
+
+function removeheat(){
+map.removeLayer(layer);
+}
+
+
+
+function Heatmap( radius){
+map.removeLayer(layer);
+removeheat()
+	var heatmap = L.TileLayer.heatMap({
+		radius: radius,
+		opacity: 0.8,
+		gradient: {
+			0.1: "rgb(0,0,255)",
+			0.4: "rgb(0,0,255)",
+			0.7: "rgb(0,255,255)",
+			0.8: "rgb(0,255,0)",
+			0.99: "yellow",
+			1.0: "rgb(255,0,0)"
+		}
+	});
+
+	heatmap.addData(testData.data);
+
+	var overlayMaps = {
+		'Heatmap': heatmap
+	};
+
+    heatmap.addTo(map);
+
+	layer = heatmap;		
+}		
+	</script>
+</html>
